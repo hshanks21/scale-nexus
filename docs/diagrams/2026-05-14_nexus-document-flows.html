@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus — Document Creation Flows</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f5f5;
+    --ink: #2d3142;
+    --muted: #4f5d75;
+    --soft: #7a8399;
+    --accent: #eb6c36;
+    --accent-tint: rgba(235,108,54,0.08);
+    --link: #2e5aa8;
+    --store-bg: rgba(45,49,66,0.05);
+  }
+  body { margin: 0; background: var(--paper); font-family: 'Geist', system-ui, sans-serif; }
+  .title { font-family: 'Instrument Serif', serif; font-size: 1.75rem; font-weight: 400; fill: var(--ink); }
+  .subtitle { font-family: 'Geist Mono', monospace; font-size: 9px; fill: var(--muted); letter-spacing: 0.06em; }
+  .node-label { font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); }
+  .node-sub { font-family: 'Geist Mono', monospace; font-size: 8px; fill: var(--muted); }
+  .arrow-label { font-family: 'Geist Mono', monospace; font-size: 8px; fill: var(--muted); }
+  .tag { font-family: 'Geist Mono', monospace; font-size: 7px; fill: var(--muted); letter-spacing: 0.08em; }
+  .flow-title { font-family: 'Geist', sans-serif; font-size: 11px; font-weight: 600; }
+  .endpoint { font-family: 'Geist Mono', monospace; font-size: 8px; }
+</style>
+</head>
+<body>
+<div style="width:100%;max-width:1100px;margin:40px auto;">
+<svg viewBox="0 0 1100 620" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <marker id="a" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#4f5d75"/>
+    </marker>
+    <marker id="a-accent" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#eb6c36"/>
+    </marker>
+    <marker id="a-link" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#2e5aa8"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="40" y="40" class="title">Document Creation Flows</text>
+  <text x="40" y="56" class="subtitle">THREE PATHS INTO NEXUS — FULCRUM · MY SCALE · SCOUT</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FLOW 1 — FULCRUM (left column) -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Fulcrum label -->
+  <rect x="40" y="76" width="80" height="20" rx="3" fill="rgba(46,90,168,0.08)" stroke="#2e5aa8" stroke-width="1"/>
+  <text x="80" y="89" class="flow-title" text-anchor="middle" fill="#2e5aa8">FULCRUM</text>
+
+  <!-- Source: Sizer PDF -->
+  <rect x="40" y="112" width="200" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+  <text x="140" y="130" class="node-label" text-anchor="middle">Sizer PDF Generator</text>
+  <text x="140" y="144" class="node-sub" text-anchor="middle">quotes, SOWs, assessments</text>
+  <rect x="52" y="152" width="36" height="10" rx="2" fill="transparent" stroke="rgba(46,90,168,0.4)" stroke-width="0.8"/>
+  <text x="70" y="159" class="tag" text-anchor="middle" fill="#2e5aa8">SOURCE</text>
+
+  <!-- Arrow: generate -->
+  <line x1="140" y1="160" x2="140" y2="188" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="146" y="176" class="arrow-label">PDF</text>
+
+  <!-- Arrow: direct to S3 -->
+  <line x1="240" y1="132" x2="340" y2="132" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="274" y="126" class="arrow-label">upload (direct to S3)</text>
+
+  <!-- MinIO S3 (Fulcrum flow) -->
+  <rect x="340" y="112" width="160" height="48" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="420" y="128" class="node-label" text-anchor="middle">MinIO S3</text>
+  <text x="420" y="142" class="node-sub" text-anchor="middle">/{clientId}/{year}/raw/{docId}.pdf</text>
+
+  <!-- Arrow: metadata to Nexus -->
+  <line x1="340" y1="132" x2="340" y2="196" stroke="#2e5aa8" stroke-width="1" marker-end="url(#a-link)" stroke-dasharray="3,2"/>
+  <text x="316" y="168" class="arrow-label" fill="#2e5aa8">POST /api/documents</text>
+
+  <!-- Nexus Write API (Fulcrum path) -->
+  <rect x="260" y="196" width="160" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+  <text x="340" y="212" class="node-label" text-anchor="middle">Nexus Write API</text>
+  <text x="340" y="226" class="node-sub" text-anchor="middle">POST /api/documents</text>
+  <text x="340" y="238" class="node-sub" text-anchor="middle">(metadata only)</text>
+  <rect x="272" y="240" width="54" height="10" rx="2" fill="transparent" stroke="rgba(46,90,168,0.4)" stroke-width="0.8"/>
+  <text x="299" y="248" class="tag" text-anchor="middle" fill="#2e5aa8">NO MARKDOWN</text>
+
+  <!-- Arrow: catalog -->
+  <line x1="420" y1="220" x2="500" y2="220" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="428" y="214" class="arrow-label">catalog</text>
+
+  <!-- MongoDB -->
+  <rect x="500" y="196" width="140" height="52" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="570" y="212" class="node-label" text-anchor="middle">MongoDB Atlas</text>
+  <text x="570" y="226" class="node-sub" text-anchor="middle">document metadata</text>
+  <rect x="508" y="236" width="32" height="10" rx="2" fill="transparent" stroke="rgba(45,49,66,0.3)" stroke-width="0.8"/>
+  <text x="524" y="244" class="tag" text-anchor="middle" fill="var(--muted)">DB</text>
+
+  <!-- Flow 1 step labels -->
+  <text x="56" y="180" class="arrow-label">generate</text>
+  <text x="56" y="262" class="arrow-label" fill="#4f5d75">1. Generate PDF</text>
+  <text x="56" y="276" class="arrow-label" fill="#4f5d75">2. Upload to S3</text>
+  <text x="56" y="290" class="arrow-label" fill="#4f5d75">3. POST metadata to Nexus</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FLOW 2 — MY SCALE (middle column) -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- My Scale label -->
+  <rect x="40" y="318" width="80" height="20" rx="3" fill="rgba(46,90,168,0.08)" stroke="#2e5aa8" stroke-width="1"/>
+  <text x="80" y="331" class="flow-title" text-anchor="middle" fill="#2e5aa8">MY SCALE</text>
+
+  <!-- Source: QBR Generator -->
+  <rect x="40" y="354" width="200" height="48" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+  <text x="140" y="372" class="node-label" text-anchor="middle">QBR Report Generator</text>
+  <text x="140" y="386" class="node-sub" text-anchor="middle">customer dashboards, reports</text>
+  <rect x="52" y="394" width="36" height="10" rx="2" fill="transparent" stroke="rgba(46,90,168,0.4)" stroke-width="0.8"/>
+  <text x="70" y="401" class="tag" text-anchor="middle" fill="#2e5aa8">SOURCE</text>
+
+  <!-- Arrow: direct to S3 -->
+  <line x1="240" y1="374" x2="340" y2="374" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="268" y="368" class="arrow-label">upload (direct to S3)</text>
+
+  <!-- MinIO S3 (My Scale flow) -->
+  <rect x="340" y="354" width="160" height="48" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="420" y="370" class="node-label" text-anchor="middle">MinIO S3</text>
+  <text x="420" y="384" class="node-sub" text-anchor="middle">/{clientId}/{year}/raw/{docId}.pdf</text>
+
+  <!-- Arrow: metadata to Nexus -->
+  <line x1="340" y1="374" x2="340" y2="440" stroke="#2e5aa8" stroke-width="1" marker-end="url(#a-link)" stroke-dasharray="3,2"/>
+  <text x="316" y="412" class="arrow-label" fill="#2e5aa8">POST /api/documents</text>
+
+  <!-- Nexus Write API -->
+  <rect x="260" y="440" width="160" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+  <text x="340" y="456" class="node-label" text-anchor="middle">Nexus Write API</text>
+  <text x="340" y="470" class="node-sub" text-anchor="middle">POST /api/documents</text>
+  <text x="340" y="482" class="node-sub" text-anchor="middle">(metadata only)</text>
+  <rect x="272" y="484" width="54" height="10" rx="2" fill="transparent" stroke="rgba(46,90,168,0.4)" stroke-width="0.8"/>
+  <text x="299" y="492" class="tag" text-anchor="middle" fill="#2e5aa8">NO MARKDOWN</text>
+
+  <!-- Arrow: catalog -->
+  <line x1="420" y1="466" x2="500" y2="466" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="428" y="460" class="arrow-label">catalog</text>
+
+  <!-- MongoDB -->
+  <rect x="500" y="440" width="140" height="52" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="570" y="456" class="node-label" text-anchor="middle">MongoDB Atlas</text>
+  <text x="570" y="470" class="node-sub" text-anchor="middle">document metadata</text>
+  <rect x="508" y="480" width="32" height="10" rx="2" fill="transparent" stroke="rgba(45,49,66,0.3)" stroke-width="0.8"/>
+  <text x="524" y="488" class="tag" text-anchor="middle" fill="var(--muted)">DB</text>
+
+  <!-- Flow 2 step labels -->
+  <text x="56" y="424" class="arrow-label" fill="#4f5d75">1. Generate PDF</text>
+  <text x="56" y="438" class="arrow-label" fill="#4f5d75">2. Upload to S3</text>
+  <text x="56" y="452" class="arrow-label" fill="#4f5d75">3. POST metadata to Nexus</text>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- FLOW 3 — SCOUT (right column, accent) -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- Scout label -->
+  <rect x="720" y="76" width="80" height="20" rx="3" fill="rgba(235,108,54,0.10)" stroke="#eb6c36" stroke-width="1.5"/>
+  <text x="760" y="89" class="flow-title" text-anchor="middle" fill="#eb6c36">SCOUT</text>
+
+  <!-- Scout source: Agent creates doc -->
+  <rect x="720" y="112" width="200" height="52" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+  <text x="820" y="130" class="node-label" text-anchor="middle">Scout Agent</text>
+  <text x="820" y="144" class="node-sub" text-anchor="middle">business intel, SOWs, call summaries</text>
+  <rect x="732" y="152" width="36" height="10" rx="2" fill="rgba(46,90,168,0.08)" stroke="rgba(46,90,168,0.4)" stroke-width="0.8"/>
+  <text x="750" y="159" class="tag" text-anchor="middle" fill="#2e5aa8">AGENT</text>
+
+  <!-- Arrow: raw PDF to S3 -->
+  <line x1="920" y1="132" x2="980" y2="132" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="930" y="126" class="arrow-label">upload raw</text>
+
+  <!-- S3 raw -->
+  <rect x="980" y="112" width="160" height="48" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="1060" y="128" class="node-label" text-anchor="middle">MinIO S3</text>
+  <text x="1060" y="142" class="node-sub" text-anchor="middle">/{clientId}/{year}/raw/{docId}.pdf</text>
+  <rect x="988" y="152" width="28" height="10" rx="2" fill="transparent" stroke="rgba(45,49,66,0.3)" stroke-width="0.8"/>
+  <text x="1002" y="159" class="tag" text-anchor="middle" fill="var(--muted)">S3</text>
+
+  <!-- Arrow: ingest to Nexus MCP -->
+  <line x1="820" y1="164" x2="820" y2="196" stroke="#4f5d75" stroke-width="1" marker-end="url(#a)"/>
+  <text x="826" y="182" class="arrow-label">ingest</text>
+
+  <!-- Nexus MCP (focal) -->
+  <rect x="740" y="196" width="160" height="64" rx="6" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.5"/>
+  <text x="820" y="216" class="node-label" text-anchor="middle">Nexus MCP</text>
+  <text x="820" y="230" class="node-sub" text-anchor="middle">POST /api/ingest</text>
+  <rect x="748" y="242" width="36" height="10" rx="2" fill="rgba(235,108,54,0.15)"/>
+  <text x="766" y="250" class="tag" text-anchor="middle" fill="#eb6c36">CORE</text>
+
+  <!-- Arrow: MarkItDown -->
+  <line x1="820" y1="260" x2="820" y2="292" stroke="#eb6c36" stroke-width="1" marker-end="url(#a-accent)"/>
+  <text x="826" y="278" class="arrow-label" fill="#eb6c36">MarkItDown</text>
+
+  <!-- MarkItDown -->
+  <rect x="740" y="292" width="160" height="52" rx="6" fill="rgba(235,108,54,0.04)" stroke="#eb6c36" stroke-width="1"/>
+  <text x="820" y="308" class="node-label" text-anchor="middle">MarkItDown</text>
+  <text x="820" y="322" class="node-sub" text-anchor="middle">Python · PDF → markdown</text>
+  <rect x="748" y="332" width="52" height="10" rx="2" fill="transparent" stroke="rgba(235,108,54,0.4)" stroke-width="0.8"/>
+  <text x="774" y="340" class="tag" text-anchor="middle" fill="#eb6c36">SCOUT ONLY</text>
+
+  <!-- Arrow: markdown sidecar to S3 -->
+  <line x1="900" y1="318" x2="978" y2="318" stroke="#eb6c36" stroke-width="1" marker-end="url(#a-accent)"/>
+  <text x="930" y="312" class="arrow-label" fill="#eb6c36">markdown sidecar</text>
+
+  <!-- S3 markdown path -->
+  <rect x="980" y="196" width="160" height="48" rx="6" fill="rgba(235,108,54,0.06)" stroke="#eb6c36" stroke-width="1"/>
+  <text x="1060" y="212" class="node-label" text-anchor="middle">MinIO S3</text>
+  <text x="1060" y="226" class="node-sub" text-anchor="middle">/{clientId}/{year}/text/{docId}.md</text>
+  <rect x="988" y="236" width="36" height="10" rx="2" fill="rgba(235,108,54,0.12)"/>
+  <text x="1006" y="244" class="tag" text-anchor="middle" fill="#eb6c36">MARKDOWN</text>
+
+  <!-- Arrow: catalog metadata -->
+  <line x1="1060" y1="220" x2="1060" y2="164" stroke="#eb6c36" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#a-accent)"/>
+  <text x="1066" y="196" class="arrow-label" fill="#eb6c36">catalog</text>
+
+  <!-- MongoDB (Scout path) -->
+  <rect x="980" y="292" width="160" height="52" rx="6" fill="rgba(45,49,66,0.05)" stroke="#4f5d75" stroke-width="1"/>
+  <text x="1060" y="308" class="node-label" text-anchor="middle">MongoDB Atlas</text>
+  <text x="1060" y="322" class="node-sub" text-anchor="middle">document metadata</text>
+  <rect x="988" y="332" width="32" height="10" rx="2" fill="transparent" stroke="rgba(45,49,66,0.3)" stroke-width="0.8"/>
+  <text x="1004" y="340" class="tag" text-anchor="middle" fill="var(--muted)">DB</text>
+
+  <!-- Flow 3 step labels -->
+  <text x="736" y="188" class="arrow-label" fill="#4f5d75">1. Create doc</text>
+  <text x="736" y="288" class="arrow-label" fill="#4f5d75">2. Upload raw to S3</text>
+  <text x="736" y="380" class="arrow-label" fill="#4f5d75">3. POST /api/ingest</text>
+  <text x="736" y="394" class="arrow-label" fill="#4f5d75">4. MarkItDown → markdown</text>
+  <text x="736" y="408" class="arrow-label" fill="#4f5d75">5. Markdown to S3</text>
+  <text x="736" y="422" class="arrow-label" fill="#4f5d75">6. Metadata cataloged</text>
+
+  <!-- ─── Shared label ─── -->
+  <line x1="640" y1="80" x2="640" y2="360" stroke="rgba(45,49,66,0.12)" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="648" y="76" class="tag" fill="var(--soft)">ALL FLOWS</text>
+
+  <!-- Legend -->
+  <rect x="40" y="544" width="360" height="64" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.15)" stroke-width="1"/>
+  <text x="56" y="560" class="tag" fill="var(--soft)" letter-spacing="0.06em">KEY</text>
+  <line x1="56" y1="566" x2="100" y2="566" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+  <text x="56" y="580" class="node-sub">Fulcrum / My Scale → S3 directly → POST /api/documents (metadata only)</text>
+  <text x="56" y="596" class="node-sub">Scout → S3 raw → POST /api/ingest → MarkItDown → S3 markdown sidecar</text>
+
+  <!-- Agent loop reminder -->
+  <rect x="420" y="540" width="360" height="64" rx="6" fill="rgba(46,90,168,0.06)" stroke="#2e5aa8" stroke-width="1" stroke-dasharray="3,2"/>
+  <text x="436" y="558" class="node-label" fill="#2e5aa8">Agent Query Loop (RAG)</text>
+  <text x="436" y="574" class="node-sub">Agent calls Nexus MCP → SearchDocuments → Found? → presigned URL → markdown (cheap) or PDF</text>
+  <text x="436" y="590" class="node-sub">Not found? → run expensive task → store result in Nexus → "ask Nexus first"</text>
+
+  <!-- Supabase auth footer -->
+  <rect x="800" y="540" width="320" height="64" rx="6" fill="rgba(45,49,66,0.03)" stroke="rgba(45,49,66,0.15)" stroke-width="1"/>
+  <text x="816" y="558" class="tag" fill="var(--soft)" letter-spacing="0.06em">AUTH</text>
+  <line x1="816" y1="564" x2="856" y2="564" stroke="rgba(45,49,66,0.20)" stroke-width="1"/>
+  <text x="816" y="578" class="node-sub">Supabase Auth — human users (Nexus frontend)</text>
+  <text x="816" y="592" class="node-sub">X-Api-Key — agents (Scout, future agents) — validated server-side</text>
+
+</svg>
+</div>
+</body>
+</html>
