@@ -284,3 +284,13 @@ POST /api/ingest             — Scout ingest (triggers MarkItDown + S3 write)
 - Proto schema: `docs/nexus.proto`
 - Design system: `DESIGN.md`
 - Repo: git@github.com:hshanks21/nexus.git
+
+
+## Schema Strategy
+
+The protobuf schema (nexus.proto) is used **only as a schema design artifact**:
+- At build time: proto-loader generates TypeScript types from nexus.proto
+- At runtime: REST JSON over HTTPS — no protobuf wire format
+- In storage: MongoDB stores documents as JSON
+
+Protobuf wire format is not used at any point in the data flow. The proto file is the single source of truth for field names, types, and structure — everything downstream is JSON.
