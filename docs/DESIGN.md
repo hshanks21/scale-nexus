@@ -332,8 +332,55 @@ Not in scope for v1. Light mode only.
 
 ---
 
+## Schema Strategy
+
+Protobuf is used **only as a schema design artifact** — not as runtime serialization. The  file generates TypeScript types at build time via . The runtime API format is REST JSON, and MongoDB stores documents as JSON. No protobuf wire format is used at runtime.
+
+## Schema Strategy
+
+Protobuf is used only as a schema design artifact — not as runtime serialization. The proto file generates TypeScript types at build time via proto-loader. The runtime API format is REST JSON, and MongoDB stores documents as JSON. No protobuf wire format is used at runtime.
+
 ## Source
 
 - Browsing aesthetic: Wired ( Condé Nast) — editorial design spec from design audit
 - Content aesthetic: Origin (fintech dashboard) — document listing reference
 - Font substitutes: Playfair Display (Wired), Lora (BreveText), Inter (Apercu)
+
+---
+
+## Schema Strategy
+
+Protobuf is used **only as a schema design artifact** — not as runtime serialization.
+-  generates TypeScript types at build time via 
+- REST JSON is the runtime API format
+- MongoDB stores documents as JSON
+- No protobuf wire format at runtime
+
+---
+
+## Schema Strategy
+
+Protobuf is used **only as a schema design artifact** — not as runtime serialization.
+-  generates TypeScript types at build time via 
+- REST JSON is the runtime API format
+- MongoDB stores documents as JSON
+- No protobuf wire format at runtime
+---
+## Schema Strategy
+
+Protobuf is used only as a schema design artifact — not as runtime serialization.
+- nexus.proto generates TypeScript types at build time via proto-loader
+- REST JSON is the runtime API format
+- MongoDB stores documents as JSON
+- No protobuf wire format at runtime
+
+
+---
+
+## Schema Strategy
+
+Protobuf is used only as a schema design artifact — not as runtime serialization.
+- nexus.proto generates TypeScript types at build time via proto-loader
+- REST JSON is the runtime API format
+- MongoDB stores documents as JSON
+- No protobuf wire format at runtime
