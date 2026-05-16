@@ -1,5 +1,5 @@
 // Nexus Knowledge Graph — Multi-User Schema
-// v2 — markdown stored in S3, MongoDB holds metadata only
+// v3 — versioning: never delete originals, capture version metadata
 // MarkItDown pipeline: raw PDF → markdown → S3 (agents read from S3)
 // MongoDB: metadata for search, filtering, graph traversal
 
@@ -20,35 +20,44 @@ message Client {
 }
 
 message Document {
-  string id = 1;
-  string kind = 2;                  // "knowledge" | "binary"
-  string mime_type = 3;            // "text/markdown" | "image/jpeg" | "application/pdf"
+  string id = 1;                    // UUID — primary key, never changes across versions
+  int32 version = 2;                 // monotonically increasing: 1, 2, 3...
+  string previous_version_id = 3;   // UUID of the prior version (null for v1)
   string name = 4;                  // display name, e.g. "Acme Corp SOW v2"
-  string business_type = 5;         // "SOW" | "PO" | "Whitepaper" | "Contract" | "Report"
-  string client_id = 6;             // "STG" default
+  string kind = 5;                  // "knowledge" | "binary"
+  string mime_type = 6;             // "text/markdown" | "image/jpeg" | "application/pdf"
+  string business_type = 7;         // "SOW" | "PO" | "Whitepaper" | "Contract" | "Report"
+  string client_id = 8;             // "STG" default
   // content intentionally absent — markdown lives in S3, agents read from s3_text_path
-  string s3_raw_path = 7;           // s3://{bucket}/{clientId}/{year}/raw/{docId}.pdf
-  string s3_text_path = 8;          // s3://{bucket}/{clientId}/{year}/text/{docId}.md
-  repeated string topic_ids = 9;    // refs to Topic.id
-  string area_id = 10;              // ref to Area.id
-  string superseded_by = 11;       // UUID of replacement doc
-  bool superseded = 12;            // soft filter — show only non-superseded unless requested
-  int64 created_at = 13;
-  string created_by = 14;           // "hshanks@scout", "rmoran@fulcrum", "harold@nexus"
-  int64 modified_at = 15;
-  string modified_by = 16;
-  repeated SummaryKey metadata = 17; // key/value pairs: department, contract_value, expires_at, etc.
-  bool archived = 18;               // soft-delete — hidden from UI unless include_archived
+  string s3_raw_path = 9;           // s3://{bucket}/{clientId}/{year}/raw/{docId}/v{version}.pdf
+  string s3_text_path = 10;         // s3://{bucket}/{clientId}/{year}/text/{docId}/v{version}.md
+  repeated string topic_ids = 11;   // refs to Topic.id
+  string area_id = 12;              // ref to Area.id
+  bool is_latest = 13;              // true = current version, false = historical
+  int64 created_at = 14;
+  string created_by = 15;            // "hshanks@scout", "rmoran@fulcrum", "harold@nexus"
+  int64 modified_at = 16;
+  string modified_by = 17;
+  repeated SummaryKey metadata = 18; // key/value pairs: department, contract_value, expires_at, etc.
+  repeated DocumentVersionNote version_history = 19; // ordered list of all version notes
+  bool archived = 20;                // soft-delete — keeps S3 + MongoDB but hidden from UI
+}
+
+message DocumentVersionNote {
+  int32 version = 1;                // which version this note describes
+  string note = 2;                  // what changed: "updated pricing", "renewed term", "added exhibit A"
+  string changed_by = 3;           // "hshanks@scout"
+  int64 changed_at = 4;             // Unix timestamp
 }
 
 message SummaryKey {
   string name = 1;   // "department", "contract_value", "expires_at"
-  string type = 2;    // "string" | "number" | "date"
+  string type = 2;   // "string" | "number" | "date"
   string value = 3;   // serialized
 }
 
 message Topic {
-  string id = 1;
+  string id = 1;                    // UUID
   string name = 2;                  // slug, e.g. "managed-services"
   string title = 3;                 // display name, e.g. "Managed Services"
   string description = 4;
@@ -59,9 +68,9 @@ message Topic {
 
 message Area {
   string id = 1;
-  string name = 2;
-  string title = 3;
-  string color = 4;                 // hex for UI badges
+  string name = 2;                  // slug
+  string title = 3;                 // display name, e.g. "Sales", "Engineering"
+  string color = 4;                 // hex color for UI badges, e.g. "#0D2C2C"
   int64 created_at = 5;
 }
 
@@ -77,8 +86,9 @@ message SearchDocumentsRequest {
   repeated string topic_ids = 4;
   string area_id = 5;
   bool include_archived = 6;
-  int32 limit = 7;                 // default 20, max 100
-  int32 offset = 8;
+  bool latest_only = 7;           // default true — search only current versions
+  int32 limit = 8;                 // default 20, max 100
+  int32 offset = 9;
 }
 
 message SearchDocumentsResponse {
@@ -88,28 +98,33 @@ message SearchDocumentsResponse {
 
 message DocumentSummary {
   string id = 1;
-  string name = 2;
-  string business_type = 3;
-  string client_id = 4;
-  string s3_text_path = 5;          // agent reads this for content/context
-  repeated string topic_titles = 6; // resolved topic names (not IDs)
-  string area_id = 7;
-  int64 created_at = 8;
-  string created_by = 9;
-  bool superseded = 10;
-  string superseded_by = 11;
-  repeated SummaryKey metadata = 12; // key/values shown in search results
+  int32 version = 2;
+  string name = 3;
+  string business_type = 4;
+  string client_id = 5;
+  string s3_text_path = 6;          // agent reads this for content/context
+  repeated string topic_titles = 7; // resolved topic names (not IDs)
+  string area_id = 8;
+  int64 created_at = 9;
+  string created_by = 10;
+  bool is_latest = 11;
+  int32 total_versions = 12;        // how many versions exist for this doc
+  repeated SummaryKey metadata = 13; // key/values shown in search results
 }
 
 message GetDocumentRequest {
   string id = 1;
-  int64 presigned_ttl = 2;         // S3 presigned URL TTL in seconds, default 3600
+  int32 version = 2;               // optional — omit for latest
+  bool include_content = 3;        // embed full markdown body in response
+  int64 presigned_ttl = 4;         // S3 presigned URL TTL in seconds, default 3600
+  bool include_version_history = 5; // include all version notes in response
 }
 
 message GetDocumentResponse {
   Document document = 1;
   string text_presigned_url = 2;   // presigned URL for s3_text_path (markdown — agents read this)
   string raw_presigned_url = 3;    // presigned URL for s3_raw_path (original PDF)
+  repeated DocumentVersionNote version_history = 4; // all versions if requested
 }
 
 message ListDocumentsRequest {
@@ -118,7 +133,7 @@ message ListDocumentsRequest {
   string area_id = 3;
   repeated string topic_ids = 4;
   bool include_archived = 5;
-  bool superseded_only = 6;
+  bool latest_only = 6;            // default true
   int32 limit = 7;
   int32 offset = 8;
   string sort_by = 9;             // "created_at" | "name" | "business_type"
@@ -130,26 +145,35 @@ message ListDocumentsResponse {
   int32 total = 2;
 }
 
+message ListDocumentVersionsRequest {
+  string id = 1;                  // document UUID — returns all versions
+}
+
+message ListDocumentVersionsResponse {
+  repeated Document document_versions = 1;
+  int32 total = 2;
+}
+
 // ─────────────────────────────────────────────
-// Ingest Pipeline — Scout uploads PDF, MarkItDown converts, stored to S3
-// MongoDB receives metadata only (no markdown body)
+// Ingest Pipeline — create new version or new document
 // ─────────────────────────────────────────────
 
 message IngestDocumentRequest {
-  string name = 1;
+  string name = 1;                // display name, e.g. "Acme SOW 2025"
   string business_type = 2;
   string client_id = 3;           // defaults to "STG"
   bytes raw_content = 4;           // PDF binary
   string mime_type = 5;           // "application/pdf"
   repeated string topic_names = 6; // create topics if missing
   string area_id = 7;
-  string created_by = 8;           // "scout@process"
+  string created_by = 8;          // "scout@process"
   repeated SummaryKey metadata = 9;
-  string supersede_doc_id = 10;   // marks that doc as superseded by this new ingest
+  string supersede_doc_id = 10;   // if set, creates new version of that doc (not new doc)
+  string version_note = 11;       // what changed: "initial draft", "updated pricing"
 }
 
 message IngestDocumentResponse {
-  Document document = 1;          // MongoDB record with S3 paths
+  Document document = 1;          // MongoDB record with S3 paths + version info
   // markdown lives in S3 — no content returned here
 }
 
@@ -176,6 +200,7 @@ service NexusDocumentService {
   rpc SearchDocuments(SearchDocumentsRequest) returns (SearchDocumentsResponse);
   rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse);
   rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse);
+  rpc ListDocumentVersions(ListDocumentVersionsRequest) returns (ListDocumentVersionsResponse);
   rpc IngestDocument(IngestDocumentRequest) returns (IngestDocumentResponse);
   rpc GeneratePresignedUrl(GeneratePresignedUrlRequest) returns (GeneratePresignedUrlResponse);
 }
