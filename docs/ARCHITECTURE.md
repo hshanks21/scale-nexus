@@ -294,3 +294,16 @@ The protobuf schema (nexus.proto) is used **only as a schema design artifact**:
 - In storage: MongoDB stores documents as JSON
 
 Protobuf wire format is not used at any point in the data flow. The proto file is the single source of truth for field names, types, and structure — everything downstream is JSON.
+
+
+### Versioning
+
+Every version of a document is preserved forever. No files are ever deleted.
+
+- Each version is a new MongoDB record with its own S3 paths
+- S3 paths include version: 
+- Document fields: , , , 
+- Default search:  — only current versions returned
+- Ingest with  → creates new version of existing doc
+- Ingest without → creates new document (version 1)
+- No file ever overwritten or deleted
