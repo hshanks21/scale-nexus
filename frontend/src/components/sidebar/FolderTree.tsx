@@ -9,19 +9,25 @@ interface FolderTreeProps {
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
-    <svg
-      width="14" height="14" viewBox="0 0 12 12" fill="none"
-      className={"transition-transform duration-150 " + (expanded ? "rotate-90" : "")}
-      style={{ flexShrink: 0, marginLeft: '-2px' }}
+    <svg 
+      width="10" height="10" viewBox="0 0 10 10" fill="none"
+      style={{ 
+        flexShrink: 0, 
+        transition: 'transform 150ms ease',
+        transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)'
+      }}
     >
-      <path d="M4.5 2.5L8 6L4.5 9.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M3.5 1.5L7 5L3.5 8.5" stroke="#b0b0b0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   )
 }
 
-function FolderIcon() {
+function FolderIcon({ active }: { active?: boolean }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+      stroke={active ? '#2563eb' : '#9ca3af'}
+      style={{ flexShrink: 0 }}
+    >
       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
     </svg>
   )
@@ -29,7 +35,9 @@ function FolderIcon() {
 
 function FileIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"
+      style={{ flexShrink: 0 }}
+    >
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
       <polyline points="14 2 14 8 20 8"/>
     </svg>
@@ -39,48 +47,97 @@ function FileIcon() {
 function FolderItem({ 
   node, level, selectedFolder, expandedFolders, onFolderSelect, onToggleExpanded 
 }: {
-  node: FolderNode, level: number, selectedFolder: string | null,
-  expandedFolders: Set<string>, onFolderSelect: (id: string) => void,
-  onToggleExpanded: (id: string) => void
+  node: FolderNode; level: number; selectedFolder: string | null;
+  expandedFolders: Set<string>; onFolderSelect: (id: string) => void;
+  onToggleExpanded: (id: string) => void;
 }) {
   const navigate = useNavigate()
   const isExpanded = expandedFolders.has(node.id)
   const isSelected = selectedFolder === node.id
+  const isClient = level === 0 && node.type === 'folder'
   
   const handleClick = () => {
     if (node.type === 'folder') {
       onToggleExpanded(node.id)
       onFolderSelect(node.id)
     } else if (node.type === 'document' && node.documentId) {
-      navigate("/documents/" + node.documentId)
+      navigate(`/documents/${node.documentId}`)
     }
   }
 
-  // Determine if this is a top-level client node
-  const isClient = level === 0 && node.type === 'folder'
+  // Client-level items render as section headers
+  if (isClient) {
+    return (
+      <div style={{ marginTop: level === 0 ? '0' : '24px' }}>
+        <div
+          onClick={handleClick}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '6px 20px',
+            cursor: 'pointer',
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#9ca3af',
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase' as const,
+          }}
+        >
+          <ChevronIcon expanded={isExpanded} />
+          <span>{node.name}</span>
+        </div>
+        {node.children && isExpanded && (
+          <div>
+            {node.children.map((child) => (
+              <FolderItem
+                key={child.id}
+                node={child}
+                level={level + 1}
+                selectedFolder={selectedFolder}
+                expandedFolders={expandedFolders}
+                onFolderSelect={onFolderSelect}
+                onToggleExpanded={onToggleExpanded}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div>
       <div
-        className={"flex items-center gap-2 cursor-pointer transition-colors duration-150 "
-          + (isSelected ? "" : "hover:bg-gray-50 ")}
-        style={{
-          padding: '8px 16px',
-          paddingLeft: (16 + level * 20) + 'px',
-          fontSize: isClient ? '11px' : '14px',
-          fontWeight: isClient ? 600 : (isSelected ? 500 : 400),
-          color: isClient ? '#6b6b6b' : '#1a1a1a',
-          letterSpacing: isClient ? '0.05em' : 'normal',
-          textTransform: isClient ? 'uppercase' as const : 'none' as const,
-          backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
-        }}
         onClick={handleClick}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          padding: '8px 20px',
+          paddingLeft: `${20 + (level - 1) * 20}px`,
+          cursor: 'pointer',
+          fontSize: '13px',
+          fontWeight: isSelected ? 500 : 400,
+          color: isSelected ? '#2563eb' : '#374151',
+          backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.06)' : 'transparent',
+          borderRadius: '0',
+          transition: 'background-color 100ms ease',
+        }}
+        onMouseEnter={(e) => {
+          if (!isSelected) (e.currentTarget as HTMLElement).style.backgroundColor = '#f9fafb'
+        }}
+        onMouseLeave={(e) => {
+          if (!isSelected) (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent'
+        }}
       >
         {node.type === 'folder' && <ChevronIcon expanded={isExpanded} />}
-        {!isClient && (node.type === 'folder' ? <FolderIcon /> : <FileIcon />)}
-        <span className="truncate">{node.name}</span>
+        {node.type === 'folder' ? <FolderIcon active={isSelected} /> : <FileIcon />}
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>
+          {node.name}
+        </span>
       </div>
-
+      
       {node.type === 'folder' && node.children && isExpanded && (
         <div>
           {node.children.map((child) => (
@@ -101,7 +158,7 @@ function FolderItem({
 }
 
 export function FolderTree({ selectedFolder, onFolderSelect }: FolderTreeProps) {
-  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['stg']))
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['stg', 'stg-sow', 'stg-sow-2026']))
 
   const handleToggleExpanded = (folderId: string) => {
     setExpandedFolders(prev => {
@@ -113,7 +170,7 @@ export function FolderTree({ selectedFolder, onFolderSelect }: FolderTreeProps) 
   }
 
   return (
-    <nav className="py-4 px-2">
+    <nav>
       {folderTree.map((node) => (
         <FolderItem
           key={node.id}
