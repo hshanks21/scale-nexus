@@ -9,10 +9,10 @@ interface FolderTreeProps {
 
 function ChevronIcon({ expanded }: { expanded: boolean }) {
   return (
-    <svg 
-      width="12" height="12" viewBox="0 0 12 12" fill="none" 
+    <svg
+      width="14" height="14" viewBox="0 0 12 12" fill="none"
       className={"transition-transform duration-150 " + (expanded ? "rotate-90" : "")}
-      style={{ flexShrink: 0 }}
+      style={{ flexShrink: 0, marginLeft: '-2px' }}
     >
       <path d="M4.5 2.5L8 6L4.5 9.5" stroke="#9ca3af" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
@@ -62,24 +62,25 @@ function FolderItem({
   return (
     <div>
       <div
-        className={"flex items-center gap-2 cursor-pointer transition-colors duration-100 "
-          + (isSelected ? "bg-gray-100 " : "hover:bg-gray-50 ")}
-        style={{ 
-          padding: '6px 12px',
+        className={"flex items-center gap-2 cursor-pointer transition-colors duration-150 "
+          + (isSelected ? "" : "hover:bg-gray-50 ")}
+        style={{
+          padding: '8px 16px',
           paddingLeft: (16 + level * 20) + 'px',
-          fontSize: isClient ? '11px' : '13px',
+          fontSize: isClient ? '11px' : '14px',
           fontWeight: isClient ? 600 : (isSelected ? 500 : 400),
           color: isClient ? '#6b6b6b' : '#1a1a1a',
           letterSpacing: isClient ? '0.05em' : 'normal',
           textTransform: isClient ? 'uppercase' as const : 'none' as const,
+          backgroundColor: isSelected ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
         }}
         onClick={handleClick}
       >
         {node.type === 'folder' && <ChevronIcon expanded={isExpanded} />}
-        {node.type === 'folder' ? <FolderIcon /> : <FileIcon />}
+        {!isClient && (node.type === 'folder' ? <FolderIcon /> : <FileIcon />)}
         <span className="truncate">{node.name}</span>
       </div>
-      
+
       {node.type === 'folder' && node.children && isExpanded && (
         <div>
           {node.children.map((child) => (
@@ -112,7 +113,7 @@ export function FolderTree({ selectedFolder, onFolderSelect }: FolderTreeProps) 
   }
 
   return (
-    <nav className="py-3">
+    <nav className="py-4 px-2">
       {folderTree.map((node) => (
         <FolderItem
           key={node.id}

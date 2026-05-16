@@ -64,11 +64,11 @@ export function FileList({ selectedFolder, onFolderSelect }: FileListProps) {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-8">
       {/* Breadcrumb */}
-      <div className="mb-6 flex items-center gap-1.5" style={{ fontSize: '13px', color: '#6b6b6b' }}>
+      <div className="mb-6 flex items-center gap-2" style={{ fontSize: '13px', color: '#6b6b6b' }}>
         {breadcrumbParts.map((part, i) => (
-          <span key={i} className="flex items-center gap-1.5">
+          <span key={i} className="flex items-center gap-2">
             {i > 0 && (
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                 <path d="M4.5 2.5L8 6L4.5 9.5" stroke="#d4d4d4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -80,44 +80,53 @@ export function FileList({ selectedFolder, onFolderSelect }: FileListProps) {
       </div>
 
       {/* Folder title */}
-      <h2 className="text-lg font-medium mb-4" style={{ color: '#1a1a1a' }}>{folderNode.name}</h2>
+      <h2 className="text-xl font-semibold mb-6" style={{ color: '#1a1a1a', letterSpacing: '-0.01em' }}>{folderNode.name}</h2>
 
       {contents.length === 0 ? (
         <p className="text-sm" style={{ color: '#9ca3af' }}>This folder is empty</p>
       ) : (
-        <div className="border rounded-lg overflow-hidden" style={{ borderColor: '#e5e5e5' }}>
-          {contents.map((item, i) => {
+        <div className="space-y-2">
+          {contents.map((item) => {
             const doc = item.type === 'document' && item.documentId ? getDocument(item.documentId) : null
-            
+
             return (
               <div
                 key={item.id}
-                className={"flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors hover:bg-gray-50 " + (i < contents.length - 1 ? "border-b" : "")}
-                style={{ borderColor: '#f0f0f0' }}
+                className="flex items-center gap-4 px-5 py-4 cursor-pointer transition-all duration-150 hover:bg-gray-50 rounded-lg border"
+                style={{ borderColor: '#e5e5e5' }}
                 onClick={() => handleItemClick(item)}
               >
-                {item.type === 'folder' ? <FolderIcon /> : <FileIcon />}
-                
+                <div style={{ flexShrink: 0 }}>
+                  {item.type === 'folder' ? <FolderIcon /> : <FileIcon />}
+                </div>
+
                 <div className="flex-1 min-w-0">
-                  <span className="text-sm font-medium" style={{ color: '#1a1a1a' }}>
+                  <div className="text-sm font-medium" style={{ color: '#1a1a1a' }}>
                     {item.name}
-                  </span>
+                  </div>
                   {doc && (
-                    <div className="flex items-center gap-3 mt-0.5" style={{ fontSize: '12px', color: '#9ca3af' }}>
+                    <div className="flex items-center gap-4 mt-1" style={{ fontSize: '13px', color: '#9ca3af' }}>
                       <span>{doc.author}</span>
+                      <span>•</span>
                       <span>{formatDate(doc.date)}</span>
-                      {doc.client && <span>{doc.client}</span>}
+                      {doc.client && (
+                        <>
+                          <span>•</span>
+                          <span>{doc.client}</span>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
 
                 {doc && (
-                  <span 
-                    className="px-2 py-0.5 rounded text-xs font-medium"
-                    style={{ 
-                      backgroundColor: '#f5f5f5', 
+                  <span
+                    className="px-3 py-1 rounded-md text-xs font-medium"
+                    style={{
+                      backgroundColor: '#f5f5f5',
                       color: '#6b6b6b',
-                      fontSize: '11px'
+                      fontSize: '12px',
+                      flexShrink: 0
                     }}
                   >
                     {doc.category}
