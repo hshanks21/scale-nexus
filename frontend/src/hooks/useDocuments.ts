@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Document, documentsApi } from '../lib/api'
+import { Document } from '../lib/mockData'
+import { documentsApi } from '../lib/api'
 
 export function useDocuments(category?: string) {
   const [documents, setDocuments] = useState<Document[]>([])

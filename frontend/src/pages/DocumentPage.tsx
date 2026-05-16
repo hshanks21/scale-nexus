@@ -4,7 +4,7 @@ import { OriginTopbar } from '../components/layout/OriginTopbar'
 import { MetadataStrip } from '../components/origin/MetadataStrip'
 import { VersionTimeline } from '../components/origin/VersionTimeline'
 import { DocumentCard } from '../components/origin/DocumentCard'
-import { useDocument } from '../hooks/useDocument'
+import { useDocument } from '../hooks/useDocuments'
 import { mockDocuments } from '../lib/mockData'
 
 export function DocumentPage() {

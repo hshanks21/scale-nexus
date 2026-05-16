@@ -15,6 +15,14 @@ export interface Document {
   }>
 }
 
+export interface FolderNode {
+  id: string
+  name: string
+  type: 'folder' | 'document'
+  children?: FolderNode[]
+  documentId?: string // only for type === 'document'
+}
+
 export const mockDocuments: Document[] = [
   {
     id: '1',
@@ -80,6 +88,99 @@ export const mockDocuments: Document[] = [
   }
 ]
 
+export const folderTree: FolderNode[] = [
+  {
+    id: 'stg',
+    name: 'STG',
+    type: 'folder',
+    children: [
+      {
+        id: 'stg-sow',
+        name: 'SOW',
+        type: 'folder',
+        children: [
+          {
+            id: 'stg-sow-2026',
+            name: '2026',
+            type: 'folder',
+            children: [
+              { id: 'doc-1', name: 'Acme Corp Statement of Work', type: 'document', documentId: '1' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'stg-contract',
+        name: 'Contract',
+        type: 'folder',
+        children: [
+          {
+            id: 'stg-contract-2026',
+            name: '2026',
+            type: 'folder',
+            children: [
+              { id: 'doc-3', name: 'Managed Services Contract', type: 'document', documentId: '3' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'stg-report',
+        name: 'Report',
+        type: 'folder',
+        children: [
+          {
+            id: 'stg-report-2026',
+            name: '2026',
+            type: 'folder',
+            children: [
+              { id: 'doc-2', name: 'Q1 2026 Quarterly Business Review', type: 'document', documentId: '2' },
+              { id: 'doc-5', name: 'Network Assessment Report', type: 'document', documentId: '5' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'stg-whitepaper',
+        name: 'Whitepaper',
+        type: 'folder',
+        children: [
+          {
+            id: 'stg-whitepaper-2026',
+            name: '2026',
+            type: 'folder',
+            children: [
+              { id: 'doc-4', name: 'Cloud Migration Whitepaper', type: 'document', documentId: '4' }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'ait',
+    name: 'AIT',
+    type: 'folder',
+    children: [
+      {
+        id: 'ait-contract',
+        name: 'Contract',
+        type: 'folder',
+        children: [
+          {
+            id: 'ait-contract-2026',
+            name: '2026',
+            type: 'folder',
+            children: [
+              { id: 'doc-6', name: 'AIT Service Agreement', type: 'document', documentId: '6' }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
 export const getDocuments = (category?: string): Document[] => {
   if (!category) return mockDocuments
   return mockDocuments.filter(doc => doc.category === category)
@@ -98,4 +199,30 @@ export const searchDocuments = (query: string): Document[] => {
     doc.author.toLowerCase().includes(lowercaseQuery) ||
     (doc.client && doc.client.toLowerCase().includes(lowercaseQuery))
   )
+}
+
+// Helper functions for the folder tree
+export const findFolderNode = (id: string, nodes: FolderNode[] = folderTree): FolderNode | undefined => {
+  for (const node of nodes) {
+    if (node.id === id) return node
+    if (node.children) {
+      const found = findFolderNode(id, node.children)
+      if (found) return found
+    }
+  }
+  return undefined
+}
+
+export const getFolderPath = (folderId: string): string[] => {
+  const findPath = (id: string, nodes: FolderNode[] = folderTree, path: string[] = []): string[] | null => {
+    for (const node of nodes) {
+      if (node.id === id) return [...path, node.name]
+      if (node.children) {
+        const found = findPath(id, node.children, [...path, node.name])
+        if (found) return found
+      }
+    }
+    return null
+  }
+  return findPath(folderId) || []
 }

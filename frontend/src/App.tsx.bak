@@ -4,6 +4,7 @@ import { AuthGuard } from './components/layout/AuthGuard'
 import { LoginPage } from './pages/LoginPage'
 import { BrowsePage } from './pages/BrowsePage'
 import { DocumentPage } from './pages/DocumentPage'
+import { SearchPage } from './pages/SearchPage'
 
 function App() {
   return (
@@ -21,6 +22,11 @@ function App() {
         <Route path="/documents/:id" element={
           <AuthGuard>
             <DocumentPage />
+          </AuthGuard>
+        } />
+        <Route path="/search" element={
+          <AuthGuard>
+            <SearchPage />
           </AuthGuard>
         } />
         
