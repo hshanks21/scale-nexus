@@ -1,0 +1,36 @@
+{
+  "name": "scale-nexus",
+  "version": "1.0.0",
+  "description": "Universal file cache and knowledge graph for Scale agents. Every document created by Fulcrum, My Scale, or Scout is stored in S3 and cataloged in MongoDB — making it retrievable by any future agent without burning tokens to recreate it.",
+  "main": "dist/index.js",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-scale-nexus:hshanks21/scale-nexus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "dotenv": "^16.4.7",
+    "minio": "^8.0.3",
+    "mongodb": "^7.2.0",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
