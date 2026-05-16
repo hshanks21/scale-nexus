@@ -7,18 +7,26 @@ interface AppLayoutProps {
 
 export function AppLayout({ children, sidebar }: AppLayoutProps) {
   return (
-    <div className="h-screen flex flex-col overflow-hidden" style={{ fontFamily: "'Inter', -apple-system, sans-serif" }}>
+    <div style={{ 
+      height: '100vh', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      overflow: 'hidden',
+      fontFamily: "'Inter', -apple-system, sans-serif"
+    }}>
       {/* Topbar */}
-      <header 
-        className="flex items-center justify-between flex-shrink-0"
-        style={{ 
-          height: '64px', 
-          padding: '0 24px',
-          borderBottom: '1px solid #f0f0f0',
-          backgroundColor: '#ffffff'
-        }}
-      >
-        <div className="flex items-center gap-3">
+      <header style={{ 
+        height: '64px', 
+        minHeight: '64px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 24px',
+        borderBottom: '1px solid #f0f0f0',
+        backgroundColor: '#ffffff',
+        flexShrink: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{ 
             width: '32px', height: '32px', 
             backgroundColor: '#1a1a1a', borderRadius: '8px',
@@ -34,11 +42,10 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="relative">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ position: 'relative' }}>
             <svg 
-              className="absolute top-1/2 -translate-y-1/2" 
-              style={{ left: '12px' }}
+              style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
               width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b0b0b0" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
             >
               <circle cx="11" cy="11" r="8"/>
@@ -59,14 +66,12 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
               }}
             />
           </div>
-          <div 
-            style={{ 
-              width: '36px', height: '36px', borderRadius: '50%', 
-              backgroundColor: '#f0f0f0',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
+          <div style={{ 
+            width: '36px', height: '36px', borderRadius: '50%', 
+            backgroundColor: '#f0f0f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer'
+          }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
               <circle cx="12" cy="7" r="4"/>
@@ -75,27 +80,35 @@ export function AppLayout({ children, sidebar }: AppLayoutProps) {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      {/* Body: sidebar + main */}
+      <div style={{ 
+        display: 'flex', 
+        flex: 1, 
+        overflow: 'hidden',
+        minHeight: 0,
+      }}>
         {/* Sidebar */}
         {sidebar && (
-          <aside 
-            className="flex-shrink-0 overflow-y-auto"
-            style={{ 
-              width: '248px', 
-              backgroundColor: '#ffffff',
-              borderRight: '1px solid #f0f0f0',
-              padding: '20px 0'
-            }}
-          >
+          <aside style={{ 
+            width: '248px', 
+            minWidth: '248px',
+            height: '100%',
+            backgroundColor: '#ffffff',
+            borderRight: '1px solid #f0f0f0',
+            overflowY: 'auto',
+            padding: '20px 0',
+          }}>
             {sidebar}
           </aside>
         )}
         
         {/* Main panel */}
-        <main 
-          className="flex-1 overflow-y-auto"
-          style={{ backgroundColor: '#fafafa' }}
-        >
+        <main style={{ 
+          flex: 1, 
+          height: '100%',
+          overflowY: 'auto',
+          backgroundColor: '#fafafa',
+        }}>
           {children}
         </main>
       </div>
