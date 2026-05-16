@@ -345,7 +345,19 @@ export function registerDocumentTools(server: McpServer) {
       }
       
       // Generate S3 paths
-      const s3RawPath = `s3://nova-vault/${client_id}/${year}/raw/${docId}/v${version}.pdf`;
+      // Derive extension from mime_type
+      const extMap: Record<string, string> = {
+        "application/pdf": ".pdf",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": ".xlsx",
+        "application/vnd.ms-excel": ".xls",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ".docx",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": ".pptx",
+        "text/markdown": ".md",
+        "image/jpeg": ".jpg",
+        "image/png": ".png",
+      };
+      const ext = extMap[mime_type] || ".bin";
+      const s3RawPath = `s3://nova-vault/${client_id}/${year}/raw/${docId}/v${version}${ext}`;
       const s3TextPath = `s3://nova-vault/${client_id}/${year}/text/${docId}/v${version}.md`;
       
       // Create document record
