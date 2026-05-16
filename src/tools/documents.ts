@@ -355,6 +355,7 @@ export function registerDocumentTools(server: McpServer) {
         "text/markdown": ".md",
         "image/jpeg": ".jpg",
         "image/png": ".png",
+        "text/html": ".html",
       };
       const ext = extMap[mime_type] || ".bin";
       const s3RawPath = `s3://nova-vault/${client_id}/${year}/raw/${docId}/v${version}${ext}`;
