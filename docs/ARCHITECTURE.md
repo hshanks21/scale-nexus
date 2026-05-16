@@ -307,3 +307,50 @@ Every version of a document is preserved forever. No files are ever deleted.
 - Ingest with  → creates new version of existing doc
 - Ingest without → creates new document (version 1)
 - No file ever overwritten or deleted
+
+
+## Build Phases
+
+### Phase 1 — MCP Core (MVP)
+**Goal:** Make document storage and retrieval work for agents via MCP.
+
+Deliverables:
+- nexus-mcp server on SSE (port 3003)
+- MongoDB Atlas connected, document/topic/area collections
+- MinIO S3 integration (upload, presigned URLs)
+- MCP tools: IngestDocument, SearchDocuments, GetDocument, ListDocuments
+- Scout API key auth (X-Api-Key)
+- All env vars in Doppler (MONGODB_URI, MINIO_*, SUPABASE_*, NEXUS_API_KEY)
+
+### Phase 2 — Web UI (Wired zone)
+**Goal:** Human staff can browse, search, and read documents.
+
+Deliverables:
+- Nexus frontend (React) with Wired editorial aesthetic
+- Document browser: magazine grid, category filters, full-text search
+- Auth: Supabase Auth
+- Document detail view (Origin zone: clean, white, rounded)
+- Version history display
+
+### Phase 3 — Scout Integration + MarkItDown
+**Goal:** Agents generate content that lands in Nexus.
+
+Deliverables:
+- Scout calls IngestDocument via API key
+- MarkItDown runs on MCP server (Python sidecar)
+- Markdown sidecar stored alongside PDF in S3
+- Superseeded chain for versioning
+
+### Phase 4 — Fulcrum/My Scale Writes
+**Goal:** Generated documents from both apps land in Nexus.
+
+Deliverables:
+- Fulcrum backend: on quote/SOW save -> upload to S3 -> POST /api/documents
+- My Scale backend: on QBR generate -> same pattern
+
+### Phase 5 — Mattermost Bot
+**Goal:** Staff query Nexus from Mattermost.
+
+Deliverables:
+- Mattermost bot receives messages
+- Calls MCP tools, posts results back to channel
