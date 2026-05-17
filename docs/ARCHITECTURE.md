@@ -354,3 +354,41 @@ Deliverables:
 Deliverables:
 - Mattermost bot receives messages
 - Calls MCP tools, posts results back to channel
+
+## User Upload Flow (Phase 2)
+
+Users can upload documents directly through the Nexus UI:
+1. Click "Upload" button in the main panel
+2. Select file (Excel, Word, PDF, HTML, etc.)
+3. Choose client, business type, and area
+4. File uploads to S3 → metadata written to MongoDB
+5. MarkItDown converts to searchable markdown sidecar (Phase 3)
+
+## Future Feature: OneDrive/SharePoint Auto-Sync
+
+For users who save files to OneDrive/SharePoint by habit:
+- Microsoft Graph API subscription watches specific folders
+- New/modified files trigger a webhook
+- Webhook handler auto-ingests file into Nexus (S3 + MongoDB + MarkItDown)
+- Users save where they naturally save; Nexus still captures it
+- Eliminates the "document goes to Teams and agents never see it" problem
+- Requires: M365 admin consent, Graph API permissions, webhook endpoint
+
+## User Upload Flow (Phase 2)
+
+Users can upload documents directly through the Nexus UI:
+1. Click "Upload" button in the main panel
+2. Select file (Excel, Word, PDF, HTML, etc.)
+3. Choose client, business type, and area
+4. File uploads to S3 -> metadata written to MongoDB
+5. MarkItDown converts to searchable markdown sidecar (Phase 3)
+
+## Future Feature: OneDrive/SharePoint Auto-Sync
+
+For users who save files to OneDrive/SharePoint by habit:
+- Microsoft Graph API subscription watches specific folders
+- New/modified files trigger a webhook
+- Webhook handler auto-ingests file into Nexus (S3 + MongoDB + MarkItDown)
+- Users save where they naturally save; Nexus still captures it
+- Eliminates the "document goes to Teams and agents never see it" problem
+- Requires: M365 admin consent, Graph API permissions, webhook endpoint
